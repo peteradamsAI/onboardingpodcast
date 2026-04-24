@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your first rubric: what good looks like</title>
+    <script src="scorm-api-wrapper.js"></script>
+    <style>/* SCORM Audio Player - TELUS Purple Branding */
+/* Self-contained styles for podcasts and audio lessons */
+
+:root {
+    --telus-purple: #4b286d;
+    --telus-purple-dark: #2c1a4d;
+    --telus-purple-light: #6b3e8f;
+    --telus-purple-pale: #f3edf7;
+    --accent-green: #66cc00;
+    --text-primary: #2c2c2e;
+    --text-secondary: #6e6e73;
+    --border-color: #e5e5ea;
+    --bg-white: #ffffff;
+    --bg-gray: #f5f5f7;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family:
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--bg-gray);
+    padding: 20px;
+}
+
+.audio-player-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    padding: 32px;
+    position: relative;
+}
+
+/* Header Styles */
+.player-header {
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--telus-purple);
+    padding-bottom: 16px;
+}
+
+.audio-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--telus-purple-dark);
+    margin-bottom: 8px;
+}
+
+.audio-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.mode-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--telus-purple-pale);
+    color: var(--telus-purple);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.segment-count {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Current Segment Display */
+.current-segment {
+    background: linear-gradient(135deg, var(--telus-purple-pale) 0%, #ffffff 100%);
+    border-left: 4px solid var(--telus-purple);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.segment-speaker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.speaker-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--telus-purple);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.speaker-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--telus-purple-dark);
+}
+
+.segment-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Progress Bar */
+.progress-container {
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.progress-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-bar::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+    border: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-bar::-webkit-slider-runnable-track {
+    background: linear-gradient(
+        to right,
+        var(--telus-purple) 0%,
+        var(--telus-purple) var(--progress, 0%),
+        var(--border-color) var(--progress, 0%),
+        var(--border-color) 100%
+    );
+    height: 6px;
+    border-radius: 3px;
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Controls Container */
+.controls-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* Playback Controls */
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.control-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.control-btn:hover {
+    border-color: var(--telus-purple);
+    color: var(--telus-purple);
+    background: var(--telus-purple-pale);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.skip-label {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.play-pause-btn {
+    background: var(--telus-purple);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.play-pause-btn:hover {
+    background: var(--telus-purple-light);
+    transform: scale(1.05);
+}
+
+.play-pause-btn:active {
+    transform: scale(0.95);
+}
+
+/* Volume Control */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.volume-slider {
+    width: 80px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+    border: none;
+}
+
+/* Speed Control */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.speed-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--telus-purple);
+    font-weight: 600;
+}
+
+.speed-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.speed-slider {
+    width: 120px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+}
+
+.speed-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--telus-purple);
+    cursor: pointer;
+    border: none;
+}
+
+.speed-markers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--text-secondary);
+    padding: 0 2px;
+}
+
+.transcript-toggle {
+    background: var(--telus-purple-pale);
+    border-color: var(--telus-purple);
+    color: var(--telus-purple);
+}
+
+.transcript-toggle:hover {
+    background: var(--telus-purple);
+    color: white;
+}
+
+/* Segment Progress */
+.segment-progress {
+    margin-bottom: 20px;
+}
+
+.segment-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.segment-info span {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.segment-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.segment-fill {
+    height: 100%;
+    background: var(--accent-green);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+/* Transcript Panel */
+.transcript-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    border-top: 1px solid var(--border-color);
+    margin-top: 20px;
+}
+
+.transcript-panel.open {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-top: 20px;
+}
+
+.transcript-header {
+    margin-bottom: 16px;
+}
+
+.transcript-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--telus-purple-dark);
+}
+
+.transcript-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.transcript-segment {
+    padding: 12px;
+    background: var(--bg-gray);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.transcript-segment:hover {
+    background: var(--telus-purple-pale);
+    border-left-color: var(--telus-purple);
+}
+
+.transcript-segment.active {
+    background: var(--telus-purple-pale);
+    border-left-color: var(--telus-purple);
+}
+
+.transcript-segment-speaker {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--telus-purple);
+    margin-bottom: 4px;
+}
+
+.transcript-segment-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.transcript-segment-time {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* Reflection Modal */
+.reflection-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.reflection-content {
+    background: var(--bg-white);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.reflection-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    background: var(--telus-purple-pale);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--telus-purple);
+}
+
+.reflection-content h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--telus-purple-dark);
+    margin-bottom: 16px;
+}
+
+.reflection-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+}
+
+.primary-btn {
+    background: var(--telus-purple);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+    background: var(--telus-purple-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    z-index: 100;
+}
+
+.loading-indicator.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--telus-purple-pale);
+    border-top-color: var(--telus-purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-indicator p {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    .audio-player-container {
+        padding: 20px;
+    }
+
+    .audio-title {
+        font-size: 22px;
+    }
+
+    .controls-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .playback-controls {
+        justify-content: center;
+    }
+
+    .speed-control,
+    .volume-control {
+        justify-content: space-between;
+    }
+
+    .speed-slider {
+        width: 100%;
+    }
+
+    .volume-slider {
+        width: 100%;
+    }
+}
+
+/* Accessibility */
+.control-btn:focus,
+.play-pause-btn:focus,
+.progress-bar:focus,
+.volume-slider:focus,
+.speed-slider:focus {
+    outline: 2px solid var(--telus-purple);
+    outline-offset: 2px;
+}
+
+/* Hidden Elements */
+.hidden {
+    display: none !important;
+}
+
+/* Assessment Section - Shown on podcast completion */
+.assessment-section {
+    margin-top: 2rem;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.assessment-card {
+    background: linear-gradient(135deg, var(--telus-purple) 0%, var(--telus-purple-dark) 100%);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-lg);
+}
+
+.assessment-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.assessment-icon svg {
+    stroke: var(--accent-green);
+}
+
+.assessment-card h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.assessment-message {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin: 1rem 0 2rem;
+    opacity: 0.95;
+}
+
+.assessment-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    color: var(--telus-purple);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.assessment-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background: #f8f8f8;
+}
+
+.assessment-btn:active {
+    transform: translateY(0);
+}
+
+.assessment-btn svg {
+    flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+    
+        <div class="audio-player-container">
+            <!-- Header -->
+            <div class="player-header">
+                <h1 id="audioTitle" class="audio-title">Loading...</h1>
+                <div class="audio-meta">
+                    <span id="audioMode" class="mode-badge"></span>
+                    <span id="segmentCount" class="segment-count"></span>
+                </div>
+            </div>
+
+            <!-- Current Segment Display -->
+            <div id="currentSegmentDisplay" class="current-segment">
+                <div class="segment-speaker">
+                    <span class="speaker-label">NOW PLAYING</span>
+                    <span id="currentSpeaker" class="speaker-name"></span>
+                </div>
+                <p id="currentSegmentText" class="segment-text"></p>
+            </div>
+
+            <!-- Audio Element (hidden) -->
+            <audio id="audioElement" preload="auto"></audio>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <input
+                    type="range"
+                    id="progressBar"
+                    class="progress-bar"
+                    min="0"
+                    max="100"
+                    value="0"
+                    aria-label="Audio progress"
+                />
+                <div class="time-display">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalDuration">0:00</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container">
+                <!-- Playback Controls -->
+                <div class="playback-controls">
+                    <button
+                        id="skipBackBtn"
+                        class="control-btn"
+                        title="Skip back 10 seconds"
+                        aria-label="Skip back 10 seconds"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                        </svg>
+                        <span class="skip-label">10s</span>
+                    </button>
+
+                    <button id="playPauseBtn" class="play-pause-btn" aria-label="Play">
+                        <svg
+                            id="playIcon"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                        >
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <svg
+                            id="pauseIcon"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="hidden"
+                        >
+                            <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                        </svg>
+                    </button>
+
+                    <button
+                        id="skipForwardBtn"
+                        class="control-btn"
+                        title="Skip forward 10 seconds"
+                        aria-label="Skip forward 10 seconds"
+                    >
+                        <span class="skip-label">10s</span>
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Volume Control -->
+                <div class="volume-control">
+                    <button id="muteBtn" class="control-btn" aria-label="Mute">
+                        <svg
+                            id="volumeIcon"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                        </svg>
+                        <svg
+                            id="muteIcon"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            style="display: none"
+                        >
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                            <line x1="23" y1="9" x2="17" y2="15" />
+                            <line x1="17" y1="9" x2="23" y2="15" />
+                        </svg>
+                    </button>
+                    <input
+                        type="range"
+                        id="volumeSlider"
+                        class="volume-slider"
+                        min="0"
+                        max="100"
+                        value="100"
+                        aria-label="Volume"
+                    />
+                </div>
+
+                <!-- Playback Speed -->
+                <div class="speed-control">
+                    <div class="speed-display">
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                        <span id="speedValue">1.00x</span>
+                    </div>
+                    <div class="speed-slider-container">
+                        <input
+                            type="range"
+                            id="speedSlider"
+                            class="speed-slider"
+                            min="50"
+                            max="200"
+                            value="100"
+                            step="5"
+                            aria-label="Playback speed"
+                        />
+                        <div class="speed-markers">
+                            <span>0.50x</span>
+                            <span>1.00x</span>
+                            <span>1.50x</span>
+                            <span>2.00x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transcript Toggle -->
+                <button
+                    id="transcriptToggleBtn"
+                    class="control-btn transcript-toggle"
+                    aria-label="Toggle transcript"
+                >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    <span>Transcript</span>
+                </button>
+            </div>
+
+            <!-- Segment Progress -->
+            <div class="segment-progress">
+                <div class="segment-info">
+                    <span id="segmentProgress">Segment 1 of 1</span>
+                </div>
+                <div class="segment-bar">
+                    <div id="segmentFill" class="segment-fill"></div>
+                </div>
+            </div>
+
+            <!-- Transcript Panel -->
+            <div id="transcriptPanel" class="transcript-panel">
+                <div class="transcript-header">
+                    <h2>Transcript</h2>
+                </div>
+                <div id="transcriptContent" class="transcript-content">
+                    <!-- Segments will be injected here -->
+                </div>
+            </div>
+
+            <!-- Reflection Prompt Modal (audio-lesson mode only) -->
+            <div id="reflectionModal" class="reflection-modal" style="display: none">
+                <div class="reflection-content">
+                    <div class="reflection-icon">
+                        <svg
+                            width="32"
+                            height="32"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                            />
+                        </svg>
+                    </div>
+                    <h3>Reflection Moment</h3>
+                    <p id="reflectionQuestion"></p>
+                    <button id="continueBtn" class="primary-btn">Continue Lesson</button>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading-indicator">
+                <div class="spinner"></div>
+                <p>Loading audio...</p>
+            </div>
+
+            <!-- Assessment Section (shown on completion) -->
+            <div id="assessmentSection" class="assessment-section" style="display: none">
+                <div class="assessment-card">
+                    <div class="assessment-icon">
+                        <svg
+                            width="48"
+                            height="48"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </div>
+                    <h2>Podcast Complete!</h2>
+                    <p class="assessment-message">
+                        Great work completing this podcast. Ready to test your knowledge?
+                    </p>
+                    <a
+                        id="assessmentLink"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="assessment-btn"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M9 11l3 3L22 4" />
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                        </svg>
+                        <span>Take Assessment</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script src="audio-player.js"></script>
+    
+    
+    <!-- Embedded Podcast Data -->
+    <script id="audioData" type="application/json">
+{
+  "mode": "podcast",
+  "title": "Your first rubric: what good looks like",
+  "audioUrl": "podcast.mp3",
+  "segments": [
+    {
+      "speaker": "Jordan",
+      "text": "Hey everyone, welcome. So — you've just been brought onto an LLM evaluation project. You've probably worked with language models before, maybe even done some RLHF work. But this project has its own conventions, and they're pretty specific.",
+      "duration": 14.76
+    },
+    {
+      "speaker": "Alex",
+      "text": "Really specific. And the fastest way to get up to speed is to understand one thing: the rubric. That's the core artifact you'll be producing or reviewing. Get that right and the rest falls into place.",
+      "duration": 12.312
+    },
+    {
+      "speaker": "Jordan",
+      "text": "So today we're going to walk through what a rubric actually is, how you build one from scratch, and the mistakes I personally made when I started. Alex is going to keep me honest.",
+      "duration": 11.232
+    },
+    {
+      "speaker": "Alex",
+      "text": "Happy to. Let's start with the big picture. The project exists because our client needs a reliable way to measure whether their model's answers are good, mediocre or bad. Rubrics are how that measurement happens.",
+      "duration": 12.936
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Right — so a rubric isn't just a checklist. It's a scoring tool that gets applied to a model's response. And it has to work whether the person applying it is a human evaluator or an automated model.",
+      "duration": 12.432
+    },
+    {
+      "speaker": "Alex",
+      "text": "That's the north star for everything we'll talk about today. A good rubric lets someone with no subject-matter expertise judge an answer correctly — just by reading the rubric. If it can't do that, it's not done.",
+      "duration": 12.672
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Okay, before we get into building rubrics, can we quickly orient people on the four task types? Because depending on your assignment, your entry point is different.",
+      "duration": 9.912
+    },
+    {
+      "speaker": "Alex",
+      "text": "Good call. So there are four. Task one is writing rubrics from scratch — given a prompt and some reference responses, you build the full rubric set. That's what most new contributors get assigned, and it's what we'll spend most of our time on today.",
+      "duration": 15.312
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Task two is optimizing existing rubrics — someone else wrote a version zero, and you fix it and score some model responses against it. Task three is writing scoring criteria in a different format called Dola, which uses a different scoring scale entirely.",
+      "duration": 16.032
+    },
+    {
+      "speaker": "Alex",
+      "text": "And task four is unmatch review — where an automated scoring pass and a human scoring pass disagree, and you figure out why. Dola and unmatch review both have their own detailed workflows. Today we're not going deep on those. Just know they exist.",
+      "duration": 14.976
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Alright, so — task one. Writing from scratch. Walk me through the structure of a rubric, because this is where I got confused early on.",
+      "duration": 8.208
+    },
+    {
+      "speaker": "Alex",
+      "text": "Every rubric has exactly five fields. Subjectivity, heading, description, weight and criteria. In that order, every time. Let's take them one by one.",
+      "duration": 8.688
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Starting with subjectivity. That's either objective or subjective, right? But it's not just a label — it's bound to the weight you assign.",
+      "duration": 8.424
+    },
+    {
+      "speaker": "Alex",
+      "text": "Exactly. And this is where a lot of people go wrong. Objective rubrics can only take weights from this set: 10, 7, negative 4, negative 10, or negative 9999. Subjective rubrics can only take 3 or 1. Those pairings are fixed. You can't mix them.",
+      "duration": 16.632
+    },
+    {
+      "speaker": "Jordan",
+      "text": "So if I label something subjective and then give it a weight of 10, that's an error — even if the content feels really important?",
+      "duration": 8.496
+    },
+    {
+      "speaker": "Alex",
+      "text": "Yes. If it's important enough to be a 10, it has to be objective — meaning most reasonable evaluators would agree whether it's met. If you can't make it objective and verifiable, it belongs at a 3 or a 1.",
+      "duration": 12.816
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Got it. What does the weight actually mean in practice? Like, a 10 versus a 7?",
+      "duration": 5.064
+    },
+    {
+      "speaker": "Alex",
+      "text": "A weight-10 rubric is a must-have. If the response omits it, the answer misses the point of the question. A weight-7 is a key point — its absence noticeably degrades the answer but doesn't make it useless. A 3 is a bonus — useful, but the answer works without it.",
+      "duration": 16.68
+    },
+    {
+      "speaker": "Jordan",
+      "text": "And the negatives — minus 4, minus 10, minus 9999 — those are errors of escalating severity. Minor factual flaw, major wrong information, and then the hard fail for harmful content or a completely wrong answer.",
+      "duration": 14.232
+    },
+    {
+      "speaker": "Alex",
+      "text": "Right. And there's a distribution you should aim for across your content rubrics. Must-haves should be at least 40% of your total positive weight. Key points between 20 and 50%. Bonuses no more than 30%. If everything is a 10 or everything is a 3, something's off.",
+      "duration": 18.096
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Okay, let's talk about the heading. Because I've seen a lot of bad ones.",
+      "duration": 4.392
+    },
+    {
+      "speaker": "Alex",
+      "text": "The heading is a short verb-initial phrase that names the specific dimension you're evaluating. 'Provide the melting point of mercury sulfide' — that's a heading. 'Melting point stuff' — that's not. It should be declarative, not an instruction to the judge.",
+      "duration": 15.312
+    },
+    {
+      "speaker": "Jordan",
+      "text": "The description is basically a note to yourself — or whoever wrote the rubric. It explains why this dimension matters and why it got this weight. It's not instructions for the judge.",
+      "duration": 11.304
+    },
+    {
+      "speaker": "Alex",
+      "text": "Right. One or two sentences. Don't overthink it. The real work is in the criteria field — that's where most of your effort should go.",
+      "duration": 8.016
+    },
+    {
+      "speaker": "Jordan",
+      "text": "So the criteria is the actual content the judge looks for. What does a strong one look like?",
+      "duration": 5.808
+    },
+    {
+      "speaker": "Alex",
+      "text": "It states the concrete correct answer. Specific numbers, named entities, exact values. If the reference says the melting point is 583.5 degrees Celsius, your criterion says 583.5 — not 'approximately 580' and not 'the correct melting point.' The specifics are the whole point.",
+      "duration": 18.672
+    },
+    {
+      "speaker": "Jordan",
+      "text": "And it has to be self-contained. No 'based on the above,' no 'this city,' no 'as mentioned in rubric 2.' Each criterion gets read in isolation, so it has to make sense on its own.",
+      "duration": 11.208
+    },
+    {
+      "speaker": "Alex",
+      "text": "There are also two optional suffixes. The first is a semantic-equivalence hedge — you add that when the wording of a correct answer can legitimately vary. Something like: 'wording need not match exactly; semantic equivalence is sufficient.'",
+      "duration": 14.568
+    },
+    {
+      "speaker": "Jordan",
+      "text": "And the second is the Notes guardrail — which is required any time your criterion contains a verifiable factual claim. A specific number, a date, a named entity. It tells the judge: if the response contradicts this fact, treat the rubric as not met.",
+      "duration": 15.288
+    },
+    {
+      "speaker": "Alex",
+      "text": "Missing that guardrail is one of the most common errors we see. Without it, a response that claims the wrong density could technically 'state a density' and still score the rubric. The guardrail closes that gap.",
+      "duration": 12.744
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Alright, let's talk pitfalls. Because there are a few that almost everyone hits on their first rubric.",
+      "duration": 6.312
+    },
+    {
+      "speaker": "Alex",
+      "text": "First one: fuzzy quantifiers. 'About 3 suggestions,' 'approximately 100 words,' 'several examples.' None of those are allowed. Replace them with exact numbers and comparison operators. 'At least 3 suggestions.' '70 to 130 words.' 'At least 3 examples.'",
+      "duration": 17.112
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Second: subjective descriptors. 'The response is professional' — that means nothing. What does professional actually look like? If you mean no contractions and no colloquialisms, say that. Make it observable.",
+      "duration": 12.744
+    },
+    {
+      "speaker": "Alex",
+      "text": "Third: fused topics. 'The response covers pricing or return policy or shipping' — those are three separate dimensions. They each get their own rubric. The only time 'A or B or C' is okay is when they're parallel examples of the same concept.",
+      "duration": 14.664
+    },
+    {
+      "speaker": "Jordan",
+      "text": "Like 'at least one relaxation practice, such as breathing exercises, meditation or stretching' — those are all instances of the same thing. That's fine. But pricing, return policy and shipping? Split them.",
+      "duration": 12.48
+    },
+    {
+      "speaker": "Alex",
+      "text": "Fourth: criteria that could apply to any prompt. 'The response provides the correct answer' — that's useless. It works for every prompt in existence. Bind your criterion to the specific entities, numbers and relationships in this prompt.",
+      "duration": 14.592
+    },
+    {
+      "speaker": "Jordan",
+      "text": "And remember — after you've written your rubrics, you should score a few of the model responses against them as a sanity check. If every response scores the same, your rubric isn't doing any work. That's a signal to go back and tighten the criteria.",
+      "duration": 15.456
+    },
+    {
+      "speaker": "Alex",
+      "text": "The scoring pass is a check on your rubric, not just on the responses. If the scores don't separate good answers from weak ones, the rubric is the problem — not the answers.",
+      "duration": 9.864
+    },
+    {
+      "speaker": "Jordan",
+      "text": "So to recap: five fields, fixed order. Subjectivity and weight are paired — you can't mix them. The criteria field is where the real work happens. Avoid fuzzy quantifiers, subjective descriptors, cross-references, fused topics and criteria that are too generic. And always add the Notes guardrail on factual rubrics.",
+      "duration": 19.464
+    },
+    {
+      "speaker": "Alex",
+      "text": "The whole thing comes back to one question: could a stranger read this rubric and score a response correctly? If yes, you're done. If not, keep going. Your playbook has the worked examples — the mercury sulfide set is the one to study first. Good luck out there.",
+      "duration": 15.504
+    }
+  ],
+  "reflectionPrompts": []
+}
+    </script>
+    
+    <!-- Audio Player Script -->
+    <script>/**
+ * SCORM Audio Player - Vanilla JavaScript
+ * Self-contained player for podcasts and audio lessons
+ * Supports SCORM 2004 tracking
+ */
+
+;(function () {
+    'use strict'
+
+    // Global state
+    const playerState = {
+        audioData: null,
+        mode: null, // 'podcast' or 'audio-lesson'
+        currentSegmentIndex: 0,
+        isPlaying: false,
+        currentTime: 0,
+        duration: 0,
+        volume: 1.0,
+        playbackRate: 1.0,
+        transcriptOpen: false,
+        segments: [],
+        correctedSegments: [], // Duration-corrected segments using browser Audio API
+        reflectionPrompts: []
+    }
+
+    // DOM elements (will be cached after DOM loads)
+    let elements = {}
+
+    /**
+     * Initialize the player when DOM is ready
+     */
+    function init() {
+        // Cache DOM elements
+        cacheElements()
+
+        // Load audio data from embedded script tag
+        loadAudioData()
+
+        // Initialize UI
+        initializeUI()
+
+        // Set up event listeners
+        setupEventListeners()
+
+        // Initialize SCORM
+        initSCORM()
+
+        // Start playing first segment
+        loadSegment(0)
+    }
+
+    /**
+     * Cache all DOM element references
+     */
+    function cacheElements() {
+        elements = {
+            // Header
+            audioTitle: document.getElementById('audioTitle'),
+            audioMode: document.getElementById('audioMode'),
+            segmentCount: document.getElementById('segmentCount'),
+
+            // Current segment display
+            currentSegmentDisplay: document.getElementById('currentSegmentDisplay'),
+            currentSpeaker: document.getElementById('currentSpeaker'),
+            currentSegmentText: document.getElementById('currentSegmentText'),
+
+            // Audio element
+            audioElement: document.getElementById('audioElement'),
+
+            // Progress
+            progressBar: document.getElementById('progressBar'),
+            currentTime: document.getElementById('currentTime'),
+            totalDuration: document.getElementById('totalDuration'),
+
+            // Controls
+            skipBackBtn: document.getElementById('skipBackBtn'),
+            playPauseBtn: document.getElementById('playPauseBtn'),
+            skipForwardBtn: document.getElementById('skipForwardBtn'),
+            playIcon: document.getElementById('playIcon'),
+            pauseIcon: document.getElementById('pauseIcon'),
+
+            // Volume
+            muteBtn: document.getElementById('muteBtn'),
+            volumeSlider: document.getElementById('volumeSlider'),
+            volumeIcon: document.getElementById('volumeIcon'),
+            muteIcon: document.getElementById('muteIcon'),
+
+            // Speed
+            speedSlider: document.getElementById('speedSlider'),
+            speedValue: document.getElementById('speedValue'),
+
+            // Transcript
+            transcriptToggleBtn: document.getElementById('transcriptToggleBtn'),
+            transcriptPanel: document.getElementById('transcriptPanel'),
+            transcriptContent: document.getElementById('transcriptContent'),
+
+            // Segment progress
+            segmentProgress: document.getElementById('segmentProgress'),
+            segmentFill: document.getElementById('segmentFill'),
+
+            // Reflection modal
+            reflectionModal: document.getElementById('reflectionModal'),
+            reflectionQuestion: document.getElementById('reflectionQuestion'),
+            continueBtn: document.getElementById('continueBtn'),
+
+            // Loading
+            loadingIndicator: document.getElementById('loadingIndicator')
+        }
+    }
+
+    /**
+     * Load audio data from embedded JSON
+     */
+    function loadAudioData() {
+        const dataScript = document.getElementById('audioData')
+        if (!dataScript) {
+            console.error('No audio data found')
+            return
+        }
+
+        try {
+            playerState.audioData = JSON.parse(dataScript.textContent)
+            playerState.mode = playerState.audioData.mode || 'podcast'
+            playerState.segments = playerState.audioData.segments || []
+            playerState.reflectionPrompts = playerState.audioData.reflectionPrompts || []
+        } catch (error) {
+            console.error('Error parsing audio data:', error)
+        }
+    }
+
+    /**
+     * Initialize UI with audio data
+     */
+    function initializeUI() {
+        if (!playerState.audioData) {
+            return
+        }
+
+        // Set title
+        elements.audioTitle.textContent = playerState.audioData.title || 'Audio Content'
+
+        // Set mode badge
+        const modeText = playerState.mode === 'audio-lesson' ? 'Audio Lesson' : 'Podcast'
+        elements.audioMode.textContent = modeText
+
+        // Set segment count
+        elements.segmentCount.textContent = `${playerState.segments.length} segments`
+
+        // Generate transcript
+        generateTranscript()
+
+        // Hide loading indicator
+        elements.loadingIndicator.classList.add('hidden')
+    }
+
+    /**
+     * Generate transcript HTML
+     */
+    function generateTranscript() {
+        if (!playerState.segments.length) {
+            return
+        }
+
+        elements.transcriptContent.innerHTML = ''
+
+        playerState.segments.forEach((segment, index) => {
+            const segmentDiv = document.createElement('div')
+            segmentDiv.className = 'transcript-segment'
+            segmentDiv.dataset.index = index
+
+            const speakerDiv = document.createElement('div')
+            speakerDiv.className = 'transcript-segment-speaker'
+            speakerDiv.textContent = segment.speaker || `Speaker ${index + 1}`
+
+            const textDiv = document.createElement('div')
+            textDiv.className = 'transcript-segment-text'
+            textDiv.textContent = segment.text
+
+            const timeDiv = document.createElement('div')
+            timeDiv.className = 'transcript-segment-time'
+            timeDiv.textContent = `Segment ${index + 1}`
+
+            segmentDiv.appendChild(speakerDiv)
+            segmentDiv.appendChild(textDiv)
+            segmentDiv.appendChild(timeDiv)
+
+            // Click handler to jump to segment
+            segmentDiv.addEventListener('click', () => {
+                loadSegment(index)
+            })
+
+            elements.transcriptContent.appendChild(segmentDiv)
+        })
+    }
+
+    /**
+     * Setup all event listeners
+     */
+    function setupEventListeners() {
+        // Audio element events
+        elements.audioElement.addEventListener('loadedmetadata', onAudioLoaded)
+        elements.audioElement.addEventListener('timeupdate', onTimeUpdate)
+        elements.audioElement.addEventListener('ended', onAudioEnded)
+        elements.audioElement.addEventListener('error', onAudioError)
+
+        // Play/Pause
+        elements.playPauseBtn.addEventListener('click', togglePlayPause)
+
+        // Skip buttons
+        elements.skipBackBtn.addEventListener('click', skipBackward)
+        elements.skipForwardBtn.addEventListener('click', skipForward)
+
+        // Progress bar
+        elements.progressBar.addEventListener('input', onProgressChange)
+
+        // Volume
+        elements.muteBtn.addEventListener('click', toggleMute)
+        elements.volumeSlider.addEventListener('input', onVolumeChange)
+
+        // Speed
+        elements.speedSlider.addEventListener('input', onSpeedChange)
+
+        // Transcript toggle
+        elements.transcriptToggleBtn.addEventListener('click', toggleTranscript)
+
+        // Reflection modal
+        elements.continueBtn.addEventListener('click', closeReflection)
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboard)
+    }
+
+    /**
+     * Load and play a segment
+     */
+    function loadSegment(index) {
+        if (index < 0 || index >= playerState.segments.length) {
+            return
+        }
+
+        playerState.currentSegmentIndex = index
+        const segment = playerState.segments[index]
+
+        // Update display
+        elements.currentSpeaker.textContent = segment.speaker || `Speaker ${index + 1}`
+        elements.currentSegmentText.textContent = segment.text
+
+        // Update segment progress
+        updateSegmentProgress()
+
+        // Highlight in transcript
+        highlightTranscriptSegment(index)
+
+        // Load audio based on architecture
+        if (segment.audioUrl) {
+            // Audio Lesson mode: Each segment has its own audio file
+            elements.audioElement.src = segment.audioUrl
+            elements.audioElement.load()
+
+            // Auto-play if currently playing
+            if (playerState.isPlaying) {
+                elements.audioElement.play().catch(console.error)
+            }
+        } else if (playerState.audioData && playerState.audioData.audioUrl) {
+            // Podcast mode: Single continuous audio file
+            // Use explicit startTime if available (more accurate), otherwise calculate from durations
+            const startTime =
+                segment.startTime !== undefined
+                    ? segment.startTime
+                    : calculateSegmentStartTime(index)
+
+            // Load audio only if not already loaded
+            if (
+                elements.audioElement.src !== playerState.audioData.audioUrl &&
+                !elements.audioElement.src.endsWith(playerState.audioData.audioUrl)
+            ) {
+                elements.audioElement.src = playerState.audioData.audioUrl
+                elements.audioElement.load()
+
+                // Wait for metadata to load, then seek to segment start time
+                elements.audioElement.addEventListener(
+                    'loadedmetadata',
+                    function seekToSegment() {
+                        elements.audioElement.currentTime = startTime
+
+                        // Auto-play if currently playing
+                        if (playerState.isPlaying) {
+                            elements.audioElement.play().catch(console.error)
+                        }
+
+                        // Remove this listener after it runs once
+                        elements.audioElement.removeEventListener('loadedmetadata', seekToSegment)
+                    },
+                    {once: true}
+                )
+            } else {
+                // Audio already loaded, just seek to segment start time
+                elements.audioElement.currentTime = startTime
+            }
+        }
+
+        // SCORM tracking
+        trackSegmentView(index)
+    }
+
+    /**
+     * Calculate the start time for a segment in podcast mode
+     * Uses corrected durations from browser Audio API
+     */
+    function calculateSegmentStartTime(targetIndex) {
+        const segments =
+            playerState.correctedSegments.length > 0
+                ? playerState.correctedSegments
+                : playerState.segments
+
+        let totalTime = 0
+        for (let i = 0; i < targetIndex; i++) {
+            const segment = segments[i]
+            totalTime += segment.duration || 0
+        }
+        return totalTime
+    }
+
+    /**
+     * Determine which segment the current playback position is in
+     * This is the source of truth for segment tracking in podcast mode
+     * Uses corrected durations from browser Audio API
+     */
+    function determineCurrentSegment(currentTime) {
+        const TOLERANCE = 0.15 // 150ms tolerance for floating-point precision
+        const segments =
+            playerState.correctedSegments.length > 0
+                ? playerState.correctedSegments
+                : playerState.segments
+
+        // If segments have explicit startTime AND endTime, use those (most accurate)
+        if (
+            segments.length > 0 &&
+            segments[0].startTime !== undefined &&
+            segments[0].endTime !== undefined
+        ) {
+            // Check each segment with proper boundary detection
+            for (let i = 0; i < segments.length; i++) {
+                const segment = segments[i]
+                const start = segment.startTime
+                const end = segment.endTime
+
+                // Check if current time is within this segment's boundaries
+                // Use tolerance to handle floating-point precision issues
+                if (currentTime >= start - TOLERANCE && currentTime < end + TOLERANCE) {
+                    return i
+                }
+            }
+
+            // If we're past all segments, return the last one
+            return segments.length - 1
+        }
+
+        // Fallback: If segments only have startTime (backward compatibility)
+        if (segments.length > 0 && segments[0].startTime !== undefined) {
+            // Iterate backwards to find which segment we're in
+            for (let i = segments.length - 1; i >= 0; i--) {
+                const segment = segments[i]
+                if (currentTime >= segment.startTime - TOLERANCE) {
+                    return i
+                }
+            }
+            return 0 // Before first segment
+        }
+
+        // Final fallback: duration-based calculation with CORRECTED durations
+        let accumulatedTime = 0
+
+        for (let i = 0; i < segments.length; i++) {
+            const segment = segments[i]
+            const segmentStart = accumulatedTime
+            const segmentEnd = accumulatedTime + (segment.duration || 0)
+
+            // Check if current time falls within this segment's range
+            if (currentTime >= segmentStart - TOLERANCE && currentTime < segmentEnd + TOLERANCE) {
+                return i // We're definitively IN this segment
+            }
+
+            accumulatedTime += segment.duration || 0
+        }
+
+        // If we're past all segments, return the last one
+        return segments.length - 1
+    }
+
+    /**
+     * Update UI to reflect a new segment (without loading audio)
+     * Used when the playback position crosses into a different segment
+     */
+    function updateToSegment(newIndex) {
+        if (newIndex < 0 || newIndex >= playerState.segments.length) {
+            return
+        }
+
+        playerState.currentSegmentIndex = newIndex
+        const segment = playerState.segments[newIndex]
+
+        // Update UI
+        elements.currentSpeaker.textContent = segment.speaker || `Speaker ${newIndex + 1}`
+        elements.currentSegmentText.textContent = segment.text
+        highlightTranscriptSegment(newIndex)
+        updateSegmentProgress()
+        trackSegmentView(newIndex)
+    }
+
+    /**
+     * Toggle play/pause
+     */
+    function togglePlayPause() {
+        if (playerState.isPlaying) {
+            pause()
+        } else {
+            play()
+        }
+    }
+
+    /**
+     * Play audio
+     */
+    function play() {
+        elements.audioElement
+            .play()
+            .then(() => {
+                playerState.isPlaying = true
+                elements.playIcon.classList.add('hidden')
+                elements.pauseIcon.classList.remove('hidden')
+                trackPlay()
+            })
+            .catch(error => {
+                console.error('Playback error:', error)
+            })
+    }
+
+    /**
+     * Pause audio
+     */
+    function pause() {
+        elements.audioElement.pause()
+        playerState.isPlaying = false
+        elements.playIcon.classList.remove('hidden')
+        elements.pauseIcon.classList.add('hidden')
+        trackPause()
+    }
+
+    /**
+     * Skip backward 10 seconds
+     */
+    function skipBackward() {
+        elements.audioElement.currentTime = Math.max(0, elements.audioElement.currentTime - 10)
+    }
+
+    /**
+     * Skip forward 10 seconds
+     */
+    function skipForward() {
+        elements.audioElement.currentTime = Math.min(
+            elements.audioElement.duration,
+            elements.audioElement.currentTime + 10
+        )
+    }
+
+    /**
+     * Handle audio loaded
+     */
+    function onAudioLoaded() {
+        const actualDuration = elements.audioElement.duration
+        playerState.duration = actualDuration
+        elements.totalDuration.textContent = formatTime(actualDuration)
+
+        // CRITICAL FIX: Correct segment durations using actual audio duration from browser
+        // Backend uses file-size-based estimation which is inaccurate
+        // Browser reads actual MP3 headers for precise duration
+        // Only apply correction in podcast mode (single audio file)
+        if (playerState.mode === 'podcast' && playerState.segments.length > 0) {
+            const estimatedTotal = playerState.segments.reduce(function (sum, seg) {
+                return sum + (seg.duration || 0)
+            }, 0)
+
+            if (
+                estimatedTotal > 0 &&
+                actualDuration > 0 &&
+                Math.abs(estimatedTotal - actualDuration) > 0.5
+            ) {
+                // Apply proportional correction to maintain relative timing
+                const correctionFactor = actualDuration / estimatedTotal
+
+                // CRITICAL: Recalculate startTime and endTime based on corrected durations
+                // Don't just copy old values - they're based on wrong duration estimates!
+                let accumulatedTime = 0
+                playerState.correctedSegments = playerState.segments.map(function (seg) {
+                    const correctedDuration = (seg.duration || 0) * correctionFactor
+                    const correctedSegment = {
+                        speaker: seg.speaker,
+                        text: seg.text,
+                        duration: correctedDuration,
+                        startTime: accumulatedTime,
+                        endTime: accumulatedTime + correctedDuration
+                    }
+                    accumulatedTime += correctedDuration
+                    return correctedSegment
+                })
+                console.log(
+                    '[SCORM Audio Player] Duration correction applied: ' +
+                        estimatedTotal.toFixed(2) +
+                        's → ' +
+                        actualDuration.toFixed(2) +
+                        's (factor: ' +
+                        correctionFactor.toFixed(4) +
+                        ')'
+                )
+            } else {
+                // Durations are accurate, use originals
+                playerState.correctedSegments = playerState.segments.slice()
+            }
+        } else {
+            // Audio lesson mode or no segments: use originals
+            playerState.correctedSegments = playerState.segments.slice()
+        }
+    }
+
+    /**
+     * Handle time update
+     */
+    function onTimeUpdate() {
+        playerState.currentTime = elements.audioElement.currentTime
+        elements.currentTime.textContent = formatTime(playerState.currentTime)
+
+        // Update progress bar
+        const progress = (playerState.currentTime / playerState.duration) * 100
+        elements.progressBar.value = progress
+        elements.progressBar.style.setProperty('--progress', `${progress}%`)
+
+        // For podcast mode: Determine which segment we're actually in based on playback position
+        if (
+            playerState.mode === 'podcast' &&
+            playerState.audioData &&
+            playerState.audioData.audioUrl
+        ) {
+            const actualSegmentIndex = determineCurrentSegment(playerState.currentTime)
+
+            // Only update UI if we've actually moved to a different segment
+            if (actualSegmentIndex !== playerState.currentSegmentIndex) {
+                updateToSegment(actualSegmentIndex)
+            }
+        }
+
+        // Update SCORM progress
+        trackProgress()
+    }
+
+    /**
+     * Handle audio ended
+     */
+    function onAudioEnded() {
+        // Check if there's a reflection prompt for this segment
+        checkForReflection()
+
+        // Auto-advance to next segment
+        if (playerState.currentSegmentIndex < playerState.segments.length - 1) {
+            setTimeout(() => {
+                loadSegment(playerState.currentSegmentIndex + 1)
+                if (playerState.isPlaying) {
+                    play()
+                }
+            }, 1000)
+        } else {
+            // End of all segments
+            pause()
+            trackCompletion()
+        }
+    }
+
+    /**
+     * Handle audio error
+     */
+    function onAudioError(event) {
+        console.error('Audio error:', event)
+        pause()
+    }
+
+    /**
+     * Handle progress bar change
+     */
+    function onProgressChange(event) {
+        const progress = event.target.value
+        elements.audioElement.currentTime = (progress / 100) * playerState.duration
+    }
+
+    /**
+     * Toggle mute
+     */
+    function toggleMute() {
+        if (elements.audioElement.volume > 0) {
+            playerState.previousVolume = elements.audioElement.volume
+            elements.audioElement.volume = 0
+            elements.volumeSlider.value = 0
+            elements.volumeIcon.classList.add('hidden')
+            elements.muteIcon.classList.remove('hidden')
+        } else {
+            const volume = playerState.previousVolume || 1.0
+            elements.audioElement.volume = volume
+            elements.volumeSlider.value = volume * 100
+            elements.volumeIcon.classList.remove('hidden')
+            elements.muteIcon.classList.add('hidden')
+        }
+    }
+
+    /**
+     * Handle volume change
+     */
+    function onVolumeChange(event) {
+        const volume = event.target.value / 100
+        elements.audioElement.volume = volume
+        playerState.volume = volume
+
+        if (volume === 0) {
+            elements.volumeIcon.classList.add('hidden')
+            elements.muteIcon.classList.remove('hidden')
+        } else {
+            elements.volumeIcon.classList.remove('hidden')
+            elements.muteIcon.classList.add('hidden')
+        }
+    }
+
+    /**
+     * Handle speed change
+     */
+    function onSpeedChange(event) {
+        const sliderValue = parseInt(event.target.value) // 50-200
+        const speed = sliderValue / 100 // Convert to 0.50-2.00
+        elements.audioElement.playbackRate = speed
+        playerState.playbackRate = speed
+        elements.speedValue.textContent = `${speed.toFixed(2)}x`
+    }
+
+    /**
+     * Toggle transcript panel
+     */
+    function toggleTranscript() {
+        playerState.transcriptOpen = !playerState.transcriptOpen
+        if (playerState.transcriptOpen) {
+            elements.transcriptPanel.classList.add('open')
+        } else {
+            elements.transcriptPanel.classList.remove('open')
+        }
+    }
+
+    /**
+     * Update segment progress indicator
+     */
+    function updateSegmentProgress() {
+        const progress = ((playerState.currentSegmentIndex + 1) / playerState.segments.length) * 100
+        elements.segmentFill.style.width = `${progress}%`
+    }
+
+    /**
+     * Highlight current segment in transcript
+     */
+    function highlightTranscriptSegment(index) {
+        const segments = elements.transcriptContent.querySelectorAll('.transcript-segment')
+        segments.forEach((seg, i) => {
+            if (i === index) {
+                seg.classList.add('active')
+                seg.scrollIntoView({behavior: 'smooth', block: 'nearest'})
+            } else {
+                seg.classList.remove('active')
+            }
+        })
+    }
+
+    /**
+     * Check for reflection prompt
+     */
+    function checkForReflection() {
+        const prompt = playerState.reflectionPrompts.find(
+            p => p.afterSegment === playerState.currentSegmentIndex
+        )
+
+        if (prompt) {
+            showReflection(prompt.question)
+        }
+    }
+
+    /**
+     * Show reflection modal
+     */
+    function showReflection(question) {
+        pause()
+        elements.reflectionQuestion.textContent = question
+        elements.reflectionModal.style.display = 'flex'
+        trackInteraction('reflection-shown')
+    }
+
+    /**
+     * Close reflection modal
+     */
+    function closeReflection() {
+        elements.reflectionModal.style.display = 'none'
+        trackInteraction('reflection-completed')
+    }
+
+    /**
+     * Handle keyboard shortcuts
+     */
+    function handleKeyboard(event) {
+        // Ignore if typing in an input
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            return
+        }
+
+        switch (event.key) {
+            case ' ':
+                event.preventDefault()
+                togglePlayPause()
+                break
+            case 'ArrowLeft':
+                event.preventDefault()
+                skipBackward()
+                break
+            case 'ArrowRight':
+                event.preventDefault()
+                skipForward()
+                break
+            case 'm':
+            case 'M':
+                event.preventDefault()
+                toggleMute()
+                break
+        }
+    }
+
+    /**
+     * Format seconds to MM:SS
+     */
+    function formatTime(seconds) {
+        if (isNaN(seconds) || !isFinite(seconds)) {
+            return '0:00'
+        }
+
+        const mins = Math.floor(seconds / 60)
+        const secs = Math.floor(seconds % 60)
+        return `${mins}:${secs.toString().padStart(2, '0')}`
+    }
+
+    /**
+     * Show assessment section if URL is available (podcast mode only)
+     */
+    function showAssessmentIfAvailable() {
+        // Only show for podcasts (not audio lessons) and only if URL is configured
+        if (
+            playerState.mode === 'podcast' &&
+            playerState.audioData &&
+            playerState.audioData.assessmentUrl
+        ) {
+            const section = document.getElementById('assessmentSection')
+            const link = document.getElementById('assessmentLink')
+
+            if (section && link) {
+                // Set the assessment URL
+                link.href = playerState.audioData.assessmentUrl
+
+                // Track when user clicks assessment link
+                link.addEventListener(
+                    'click',
+                    function () {
+                        trackInteraction('assessment-clicked')
+                    },
+                    {once: true}
+                )
+
+                // Show the section with smooth animation
+                section.style.display = 'block'
+            }
+        }
+    }
+
+    // SCORM Integration Functions
+    let scormInitialized = false
+
+    /**
+     * Initialize SCORM
+     */
+    function initSCORM() {
+        if (typeof window.API_1484_11 !== 'undefined') {
+            window.API_1484_11.Initialize('')
+            scormInitialized = true
+
+            // Get previous progress
+            const location = window.API_1484_11.GetValue('cmi.location')
+            if (location) {
+                const index = parseInt(location, 10)
+                if (!isNaN(index)) {
+                    loadSegment(index)
+                }
+            }
+        }
+    }
+
+    /**
+     * Track segment view
+     */
+    function trackSegmentView(index) {
+        if (scormInitialized) {
+            window.API_1484_11.SetValue('cmi.location', index.toString())
+            window.API_1484_11.Commit('')
+        }
+    }
+
+    /**
+     * Track play event
+     */
+    function trackPlay() {
+        if (scormInitialized) {
+            window.API_1484_11.SetValue('cmi.interactions.0.type', 'other')
+            window.API_1484_11.SetValue('cmi.interactions.0.id', 'play')
+            window.API_1484_11.Commit('')
+        }
+    }
+
+    /**
+     * Track pause event
+     */
+    function trackPause() {
+        if (scormInitialized) {
+            window.API_1484_11.SetValue(
+                'cmi.suspend_data',
+                JSON.stringify({
+                    segment: playerState.currentSegmentIndex,
+                    time: playerState.currentTime
+                })
+            )
+            window.API_1484_11.Commit('')
+        }
+    }
+
+    /**
+     * Track progress
+     */
+    function trackProgress() {
+        if (scormInitialized) {
+            const totalSegments = playerState.segments.length
+            const completedSegments = playerState.currentSegmentIndex
+            const progress = Math.floor((completedSegments / totalSegments) * 100)
+
+            window.API_1484_11.SetValue('cmi.progress_measure', (progress / 100).toString())
+            window.API_1484_11.Commit('')
+        }
+    }
+
+    /**
+     * Track completion
+     */
+    function trackCompletion() {
+        if (scormInitialized) {
+            window.API_1484_11.SetValue('cmi.completion_status', 'completed')
+            window.API_1484_11.SetValue('cmi.success_status', 'passed')
+            window.API_1484_11.SetValue('cmi.score.scaled', '1')
+            window.API_1484_11.Commit('')
+        }
+
+        // Show assessment section if available
+        showAssessmentIfAvailable()
+    }
+
+    /**
+     * Track interaction
+     */
+    function trackInteraction(interactionId) {
+        if (scormInitialized) {
+            const index = Date.now()
+            window.API_1484_11.SetValue(`cmi.interactions.${index}.id`, interactionId)
+            window.API_1484_11.SetValue(`cmi.interactions.${index}.type`, 'other')
+            window.API_1484_11.Commit('')
+        }
+    }
+
+    /**
+     * Terminate SCORM on page unload
+     */
+    window.addEventListener('beforeunload', () => {
+        if (scormInitialized) {
+            trackPause()
+            window.API_1484_11.Terminate('')
+        }
+    })
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init)
+    } else {
+        init()
+    }
+})()
+</script>
+</body>
+</html>
